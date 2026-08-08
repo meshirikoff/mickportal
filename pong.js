@@ -76,8 +76,15 @@ let ball = {
 // Input handling
 const keys = {};
 window.addEventListener('keydown', (e) => {
-    keys[e.key] = true;
+    // Store key in lowercase for consistency (handles both 'w' and 'W', 's' and 'S')
+    const key = e.key.toLowerCase();
+    keys[key] = true;
+    // Also store the original key for non-letter keys
+    if (key !== e.key) {
+        keys[e.key] = true;
+    }
     if (e.key === 'Enter' && gameState.gameOver) {
+        e.preventDefault();
         if (!gameState.namePrompted) {
             saveHighScore();
         } else {
@@ -87,7 +94,11 @@ window.addEventListener('keydown', (e) => {
 });
 
 window.addEventListener('keyup', (e) => {
-    keys[e.key] = false;
+    const key = e.key.toLowerCase();
+    keys[key] = false;
+    if (key !== e.key) {
+        keys[e.key] = false;
+    }
 });
 
 // Mobile button controls
@@ -142,10 +153,10 @@ function update() {
     }
 
     // Player paddle control (right side)
-    if (keys['ArrowUp'] || keys['w'] || keys['W'] || mobileUp) {
+    if (keys['arrowup'] || keys['w'] || mobileUp) {
         player.y = Math.max(0, player.y - player.speed);
     }
-    if (keys['ArrowDown'] || keys['s'] || keys['S'] || mobileDown) {
+    if (keys['arrowdown'] || keys['s'] || mobileDown) {
         player.y = Math.min(CANVAS_HEIGHT - player.height, player.y + player.speed);
     }
 

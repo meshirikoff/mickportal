@@ -64,7 +64,13 @@ let throwControls = {
 // Input handling
 const keys = {};
 window.addEventListener('keydown', (e) => {
-    keys[e.key] = true;
+    // Store key in lowercase for consistency (handles both 'a' and 'A')
+    const key = e.key.toLowerCase();
+    keys[key] = true;
+    // Also store the original key for non-letter keys
+    if (key !== e.key) {
+        keys[e.key] = true;
+    }
     
     if (e.key === ' ') {
         e.preventDefault();
@@ -89,7 +95,11 @@ window.addEventListener('keydown', (e) => {
 });
 
 window.addEventListener('keyup', (e) => {
-    keys[e.key] = false;
+    const key = e.key.toLowerCase();
+    keys[key] = false;
+    if (key !== e.key) {
+        keys[e.key] = false;
+    }
     
     if (e.key === ' ' && throwControls.isCharging && !gameState.gameOver && lifebelt === null) {
         e.preventDefault();
@@ -180,11 +190,11 @@ function saveHighScore() {
 function update() {
     if (!gameState.running || gameState.gameOver) return;
 
-    // Update angle based on arrow keys
-    if (keys['ArrowLeft'] || keys['a']) {
+    // Update angle based on arrow keys (normalized to lowercase for iPad compatibility)
+    if (keys['arrowleft'] || keys['a']) {
         throwControls.angle = Math.min(180, throwControls.angle + 2);
     }
-    if (keys['ArrowRight'] || keys['d']) {
+    if (keys['arrowright'] || keys['d']) {
         throwControls.angle = Math.max(0, throwControls.angle - 2);
     }
 
