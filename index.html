@@ -48,6 +48,7 @@
             max-width: 100vw;
             height: auto;
             max-height: 80vh;
+            flex-shrink: 1;
         }
         
         #gameCanvas {
@@ -134,10 +135,14 @@
             #mobileControls {
                 display: none !important;
             }
+            
+            #bottomImageContainer {
+                display: block;
+            }
         }
         
-        /* Mobile and Tablet */
-        @media (max-width: 1024px) {
+        /* Tablets (iPad, etc) */
+        @media (max-width: 1024px) and (min-width: 600px) {
             #mobileControls {
                 display: flex !important;
             }
@@ -149,7 +154,41 @@
             
             #gameContainer {
                 width: 100vw;
-                max-height: 80vh;
+                max-height: 75vh;
+            }
+            
+            #bottomImageContainer {
+                display: block;
+                max-height: 15vh;
+                margin-top: 5px;
+            }
+            
+            #bottomImage {
+                max-width: 30% !important;
+                max-height: 12vh;
+            }
+        }
+        
+        /* Mobile phones - hide image, maximize game */
+        @media (max-width: 599px) {
+            #mobileControls {
+                display: flex !important;
+            }
+            
+            body {
+                padding: 0;
+                gap: 0;
+            }
+            
+            #gameContainer {
+                width: 100vw;
+                max-height: 100vh;
+                height: 100vh;
+                max-width: 100vw;
+            }
+            
+            #bottomImageContainer {
+                display: none !important;
             }
         }
         
@@ -161,6 +200,7 @@
             max-width: 1200px;
             padding: 0 10px;
             box-sizing: border-box;
+            flex-shrink: 0;
         }
         
         #bottomImage {
@@ -179,22 +219,65 @@
             display: none;
         }
         
-        @media (max-width: 768px) {
+        /* Desktop only */
+        @media (min-width: 1025px) {
+            #mobileControls {
+                display: none !important;
+            }
+            
             #bottomImageContainer {
-                margin-top: 15px;
+                display: block;
+            }
+        }
+        
+        /* Tablets (iPad, etc) */
+        @media (max-width: 1024px) and (min-width: 600px) {
+            #mobileControls {
+                display: flex !important;
+            }
+            
+            body {
+                padding: 0;
+                gap: 0;
+            }
+            
+            #gameContainer {
+                width: 100vw;
+                max-height: 75vh;
+            }
+            
+            #bottomImageContainer {
+                display: block;
+                max-height: 15vh;
+                margin-top: 5px;
             }
             
             #bottomImage {
-                max-width: 100%;
+                max-width: 30% !important;
+                max-height: 12vh;
+            }
+        }
+        
+        /* Mobile phones - hide image, maximize game */
+        @media (max-width: 599px) {
+            #mobileControls {
+                display: flex !important;
             }
             
-            #sponsorContainer {
-                margin-top: 20px;
-                padding: 15px;
+            body {
+                padding: 0;
+                gap: 0;
             }
             
-            #sponsorText {
-                font-size: 18px;
+            #gameContainer {
+                width: 100vw;
+                max-height: 100vh;
+                height: 100vh;
+                max-width: 100vw;
+            }
+            
+            #bottomImageContainer {
+                display: none !important;
             }
         }
     </style>
