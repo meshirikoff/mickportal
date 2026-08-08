@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Mick Band">
+    <meta name="theme-color" content="#87CEEB">
+    <link rel="manifest" href="manifest.json">
+    <title>Mick Band - Game Portal</title>
+    <style>
+        * {
+            touch-action: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        
+        body {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Arial', sans-serif;
+            min-height: 100vh;
+        }
+
+        .game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            aspect-ratio: 1200 / 600;
+            background: #87CEEB;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(255, 107, 157, 0.9);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 107, 157, 1);
+            transform: scale(1.05);
+        }
+
+        /* Mobile Controls */
+        .mobileControls {
+            display: none;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 15vh;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 100;
+            display: flex;
+        }
+
+        .mobile-button {
+            flex: 1;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            touch-action: none;
+        }
+
+        .mobile-button:active {
+            background: rgba(255, 107, 157, 0.6);
+            border-color: rgba(255, 107, 157, 0.8);
+        }
+
+        #btnThrow {
+            font-size: 16px;
+        }
+
+        @media (max-width: 1024px) {
+            .mobileControls {
+                display: flex;
+            }
+
+            .back-button {
+                top: 5px;
+                left: 5px;
+                padding: 8px 15px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <button class="back-button" onclick="goHome()">← Back to Portal</button>
+        <canvas id="gameCanvas"></canvas>
+        <div class="mobileControls">
+            <button id="btnThrow" class="mobile-button">🎯 THROW</button>
+        </div>
+    </div>
+
+    <script>
+        function goHome() {
+            window.location.href = 'index.html';
+        }
+    </script>
+
+    <script src="leaderboard.js"></script>
+    <script src="band.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(err => {
+                console.log('Service Worker registration failed:', err);
+            });
+        }
+    </script>
+</body>
+</html>

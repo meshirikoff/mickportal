@@ -12,7 +12,8 @@ class Leaderboard {
         const stored = localStorage.getItem(this.storageKey);
         this.data = stored ? JSON.parse(stored) : {
             mickBlock: [],
-            mickPong: []
+            mickPong: [],
+            mickBand: []
         };
     }
 
@@ -62,7 +63,7 @@ class Leaderboard {
     }
 
     clearAll() {
-        this.data = { mickBlock: [], mickPong: [] };
+        this.data = { mickBlock: [], mickPong: [], mickBand: [] };
         this.saveLeaderboard();
     }
 

@@ -63,7 +63,7 @@
 
         .leaderboards {
             display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 30px;
             margin-bottom: 30px;
         }
@@ -244,6 +244,14 @@
                     <div class="empty-state">No scores yet. Play Mick Pong to add your score!</div>
                 </div>
             </div>
+
+            <!-- Mick Band Leaderboard -->
+            <div class="leaderboard-section">
+                <div class="leaderboard-title">🏊 Mick Band</div>
+                <div class="leaderboard-content" id="mickBandLeaderboard">
+                    <div class="empty-state">No scores yet. Play Mick Band to add your score!</div>
+                </div>
+            </div>
         </div>
 
         <div class="actions">
@@ -308,6 +316,7 @@
                 leaderboard.clearAll();
                 renderLeaderboard('mickBlock', 'mickBlockLeaderboard');
                 renderLeaderboard('mickPong', 'mickPongLeaderboard');
+                renderLeaderboard('mickBand', 'mickBandLeaderboard');
                 alert('All scores cleared!');
             }
         }
@@ -315,6 +324,7 @@
         // Render leaderboards on page load
         renderLeaderboard('mickBlock', 'mickBlockLeaderboard');
         renderLeaderboard('mickPong', 'mickPongLeaderboard');
+        renderLeaderboard('mickBand', 'mickBandLeaderboard');
     </script>
 </body>
 </html>
