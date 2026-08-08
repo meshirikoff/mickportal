@@ -15,9 +15,9 @@ const gameState = {
 // Player Object
 const player = {
     x: 100,
-    y: GROUND_Y - 40,
-    width: 40,
-    height: 40,
+    y: GROUND_Y - 60,
+    width: 60,
+    height: 60,
     velocityX: 0,
     velocityY: 0,
     speed: 5,
