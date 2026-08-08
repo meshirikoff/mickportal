@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard - Mick Portal</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#87CEEB">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .leaderboard-container {
+            max-width: 1000px;
+            width: 100%;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 48px;
+            margin-bottom: 10px;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+            animation: bounce 2s infinite;
+        }
+
+        .header a {
+            display: inline-block;
+            margin-top: 20px;
+            background: rgba(255, 107, 157, 0.9);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .header a:hover {
+            background: rgba(255, 107, 157, 1);
+            transform: scale(1.05);
+        }
+
+        .leaderboards {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .leaderboard-section {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .leaderboard-title {
+            background: linear-gradient(135deg, #FF6B9D 0%, #FF8E53 100%);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .leaderboard-content {
+            padding: 0;
+        }
+
+        .score-entry {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            border-bottom: 1px solid #eee;
+            transition: background 0.3s ease;
+        }
+
+        .score-entry:hover {
+            background: #f5f5f5;
+        }
+
+        .score-entry:last-child {
+            border-bottom: none;
+        }
+
+        .rank {
+            font-weight: bold;
+            color: #FFD700;
+            font-size: 20px;
+            width: 40px;
+            text-align: center;
+            margin-right: 15px;
+        }
+
+        .rank.first {
+            color: #FFD700;
+            font-size: 24px;
+        }
+
+        .rank.second {
+            color: #C0C0C0;
+            font-size: 22px;
+        }
+
+        .rank.third {
+            color: #CD7F32;
+            font-size: 20px;
+        }
+
+        .player-info {
+            flex: 1;
+        }
+
+        .player-name {
+            font-weight: bold;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .player-meta {
+            font-size: 12px;
+            color: #999;
+            margin-top: 3px;
+        }
+
+        .player-score {
+            font-weight: bold;
+            font-size: 18px;
+            color: #FF6B9D;
+            text-align: right;
+            min-width: 80px;
+        }
+
+        .empty-state {
+            padding: 40px 20px;
+            text-align: center;
+            color: #999;
+        }
+
+        .actions {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            background: rgba(255, 107, 157, 0.9);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 0 10px;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            background: rgba(255, 107, 157, 1);
+            transform: scale(1.05);
+        }
+
+        .btn-secondary {
+            background: rgba(100, 200, 255, 0.9);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(100, 200, 255, 1);
+        }
+
+        .medal {
+            font-size: 24px;
+            margin-right: 8px;
+        }
+
+        @media (max-width: 768px) {
+            .leaderboards {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            .header h1 {
+                font-size: 32px;
+            }
+
+            .leaderboard-title {
+                font-size: 20px;
+            }
+
+            .score-entry {
+                padding: 12px 15px;
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="leaderboard-container">
+        <div class="header">
+            <h1>🏆 LEADERBOARD 🏆</h1>
+            <a href="index.html" class="back-link">← Back to Portal</a>
+        </div>
+
+        <div class="leaderboards">
+            <!-- Mick Block Leaderboard -->
+            <div class="leaderboard-section">
+                <div class="leaderboard-title">🎮 Mick Block</div>
+                <div class="leaderboard-content" id="mickBlockLeaderboard">
+                    <div class="empty-state">No scores yet. Play Mick Block to add your score!</div>
+                </div>
+            </div>
+
+            <!-- Mick Pong Leaderboard -->
+            <div class="leaderboard-section">
+                <div class="leaderboard-title">🏓 Mick Pong</div>
+                <div class="leaderboard-content" id="mickPongLeaderboard">
+                    <div class="empty-state">No scores yet. Play Mick Pong to add your score!</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="actions">
+            <button class="btn" onclick="location.href='index.html'">← Back to Games</button>
+            <button class="btn btn-secondary" onclick="clearAllScores()">Clear All Scores</button>
+        </div>
+    </div>
+
+    <script src="leaderboard.js"></script>
+    <script>
+        function getMedalEmoji(rank) {
+            if (rank === 1) return '🥇';
+            if (rank === 2) return '🥈';
+            if (rank === 3) return '🥉';
+            return `${rank}.`;
+        }
+
+        function getRankClass(rank) {
+            if (rank === 1) return 'first';
+            if (rank === 2) return 'second';
+            if (rank === 3) return 'third';
+            return '';
+        }
+
+        function formatDate(isoString) {
+            const date = new Date(isoString);
+            return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        function renderLeaderboard(gameName, elementId) {
+            const scores = leaderboard.getScores(gameName);
+            const container = document.getElementById(elementId);
+
+            if (scores.length === 0) {
+                container.innerHTML = '<div class="empty-state">No scores yet. Go play and set a record!</div>';
+                return;
+            }
+
+            let html = '';
+            scores.forEach((score, index) => {
+                const rank = index + 1;
+                const medal = getMedalEmoji(rank);
+                const rankClass = getRankClass(rank);
+                
+                html += `
+                    <div class="score-entry">
+                        <div class="rank ${rankClass}">${medal}</div>
+                        <div class="player-info">
+                            <div class="player-name">${score.name}</div>
+                            <div class="player-meta">${formatDate(score.date)}</div>
+                        </div>
+                        <div class="player-score">${score.score}</div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function clearAllScores() {
+            if (confirm('Are you sure you want to clear ALL scores? This cannot be undone!')) {
+                leaderboard.clearAll();
+                renderLeaderboard('mickBlock', 'mickBlockLeaderboard');
+                renderLeaderboard('mickPong', 'mickPongLeaderboard');
+                alert('All scores cleared!');
+            }
+        }
+
+        // Render leaderboards on page load
+        renderLeaderboard('mickBlock', 'mickBlockLeaderboard');
+        renderLeaderboard('mickPong', 'mickPongLeaderboard');
+    </script>
+</body>
+</html>

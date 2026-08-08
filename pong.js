@@ -25,8 +25,21 @@ let gameState = {
     gameOver: false,
     winner: null,
     speedLevel: 1,
-    lastSpeedIncrease: Date.now()
+    lastSpeedIncrease: Date.now(),
+    namePrompted: false
 };
+
+// Save high score to leaderboard
+function saveHighScore() {
+    if (gameState.namePrompted) return; // Prevent duplicate saves
+    gameState.namePrompted = true;
+    
+    const playerName = prompt('You won! Enter your name for the leaderboard:', 'Player');
+    if (playerName && playerName.trim()) {
+        leaderboard.addScore('mickPong', playerName.trim(), player.score, gameState.speedLevel);
+        alert('🏆 Score saved to leaderboard!');
+    }
+}
 
 // Player paddle
 let player = {
@@ -65,7 +78,11 @@ const keys = {};
 window.addEventListener('keydown', (e) => {
     keys[e.key] = true;
     if (e.key === 'Enter' && gameState.gameOver) {
-        restartGame();
+        if (!gameState.namePrompted) {
+            saveHighScore();
+        } else {
+            restartGame();
+        }
     }
 });
 
@@ -279,7 +296,11 @@ function draw() {
 
         ctx.font = '24px Arial';
         ctx.fillStyle = '#fff';
-        ctx.fillText('Press ENTER or tap RESTART to play again', CANVAS_WIDTH / 2, CANVAS_HEIGHT - 100);
+        if (!gameState.namePrompted) {
+            ctx.fillText('Press ENTER to save your score', CANVAS_WIDTH / 2, CANVAS_HEIGHT - 100);
+        } else {
+            ctx.fillText('Score saved! Press ENTER to continue', CANVAS_WIDTH / 2, CANVAS_HEIGHT - 100);
+        }
     }
 }
 

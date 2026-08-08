@@ -9,8 +9,21 @@ const gameState = {
     level: 1,
     score: 0,
     gameOver: false,
-    gameWon: false
+    gameWon: false,
+    namePrompted: false
 };
+
+// Save high score to leaderboard
+function saveHighScore() {
+    if (gameState.namePrompted) return; // Prevent duplicate saves
+    gameState.namePrompted = true;
+    
+    const playerName = prompt('You Won! Enter your name for the leaderboard:', 'Player');
+    if (playerName && playerName.trim()) {
+        leaderboard.addScore('mickBlock', playerName.trim(), gameState.score, player.playerLevel);
+        alert('🏆 Score saved to leaderboard!');
+    }
+}
 
 // Player Object
 const player = {
@@ -351,6 +364,15 @@ document.addEventListener('keydown', (e) => {
     // Restart game on game over
     if (gameState.gameOver && e.key === 'Enter') {
         location.reload();
+    }
+    
+    // Handle game won - save high score
+    if (gameState.gameWon && e.key === 'Enter') {
+        if (!gameState.namePrompted) {
+            saveHighScore();
+        } else {
+            location.reload();
+        }
     }
 });
 
@@ -1081,7 +1103,12 @@ function drawUI() {
         ctx.font = '20px Arial';
         ctx.fillText(`Final Score: ${gameState.score}`, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 60);
         ctx.fillText(`Player Level: ${player.playerLevel} | Experience: ${player.experience}`, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 85);
-        ctx.fillText('Press ENTER to restart', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 120);
+        
+        if (!gameState.namePrompted) {
+            ctx.fillText('Press ENTER to save your score', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 120);
+        } else {
+            ctx.fillText('Score saved! Press ENTER to continue', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 120);
+        }
         
         ctx.textAlign = 'left';
     }
