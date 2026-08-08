@@ -72,8 +72,12 @@ window.addEventListener('keydown', (e) => {
         keys[e.key] = true;
     }
     
-    if (e.key === ' ') {
+    // Prevent default browser behavior for arrow keys and space
+    if (e.key.startsWith('Arrow') || e.key === ' ' || e.key === 'Enter') {
         e.preventDefault();
+    }
+    
+    if (e.key === ' ') {
         if (!gameState.gameOver && !gameState.gameWon) {
             throwControls.isCharging = true;
             throwControls.power = 0;
@@ -81,7 +85,6 @@ window.addEventListener('keydown', (e) => {
     }
     
     if (e.key === 'Enter') {
-        e.preventDefault();
         if (gameState.gameOver && !gameState.gameWon) {
             restartGame();
         } else if (gameState.gameWon) {
@@ -191,10 +194,11 @@ function update() {
     if (!gameState.running || gameState.gameOver) return;
 
     // Update angle based on arrow keys (normalized to lowercase for iPad compatibility)
-    if (keys['arrowleft'] || keys['a']) {
+    // Also check uppercase variants just in case
+    if (keys['arrowleft'] || keys['ArrowLeft'] || keys['a'] || keys['A']) {
         throwControls.angle = Math.min(180, throwControls.angle + 2);
     }
-    if (keys['arrowright'] || keys['d']) {
+    if (keys['arrowright'] || keys['ArrowRight'] || keys['d'] || keys['D']) {
         throwControls.angle = Math.max(0, throwControls.angle - 2);
     }
 

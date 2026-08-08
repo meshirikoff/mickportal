@@ -83,8 +83,13 @@ window.addEventListener('keydown', (e) => {
     if (key !== e.key) {
         keys[e.key] = true;
     }
-    if (e.key === 'Enter' && gameState.gameOver) {
+    
+    // Prevent default browser behavior for arrow keys and Enter
+    if (e.key.startsWith('Arrow') || e.key === 'Enter') {
         e.preventDefault();
+    }
+    
+    if (e.key === 'Enter' && gameState.gameOver) {
         if (!gameState.namePrompted) {
             saveHighScore();
         } else {
@@ -153,10 +158,10 @@ function update() {
     }
 
     // Player paddle control (right side)
-    if (keys['arrowup'] || keys['w'] || mobileUp) {
+    if (keys['arrowup'] || keys['ArrowUp'] || keys['w'] || keys['W'] || mobileUp) {
         player.y = Math.max(0, player.y - player.speed);
     }
-    if (keys['arrowdown'] || keys['s'] || mobileDown) {
+    if (keys['arrowdown'] || keys['ArrowDown'] || keys['s'] || keys['S'] || mobileDown) {
         player.y = Math.min(CANVAS_HEIGHT - player.height, player.y + player.speed);
     }
 
