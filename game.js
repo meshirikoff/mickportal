@@ -1,6 +1,6 @@
 // Game Constants
-const CANVAS_WIDTH = 800;
-const CANVAS_HEIGHT = 400;
+const CANVAS_WIDTH = 1200;
+const CANVAS_HEIGHT = 600;
 const GROUND_HEIGHT = 60;
 const GROUND_Y = CANVAS_HEIGHT - GROUND_HEIGHT;
 
