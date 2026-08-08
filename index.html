@@ -123,6 +123,20 @@
             }
         }
         
+        /* Bottom Image Display */
+        #bottomImageContainer {
+            margin-top: 20px;
+            text-align: center;
+            max-width: 800px;
+        }
+        
+        #bottomImage {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+        }
+        
         /* Sponsor Banner */
         #sponsorContainer {
             margin-top: 30px;
@@ -144,6 +158,14 @@
         }
         
         @media (max-width: 768px) {
+            #bottomImageContainer {
+                margin-top: 15px;
+            }
+            
+            #bottomImage {
+                max-width: 100%;
+            }
+            
             #sponsorContainer {
                 margin-top: 20px;
                 padding: 15px;
@@ -168,6 +190,10 @@
                 <button class="control-btn" id="btnAction">⚡ ACT</button>
             </div>
         </div>
+    </div>
+    
+    <div id="bottomImageContainer">
+        <img id="bottomImage" src="images/image_1.png" alt="Game Illustration">
     </div>
     
     <div id="sponsorContainer">
