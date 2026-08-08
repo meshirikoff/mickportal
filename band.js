@@ -16,6 +16,7 @@ const LIFEBELT_RADIUS = 35;
 const THROW_SPEED = 8;
 const GRAVITY = 0.35;
 const MAX_ROUNDS = 10;
+const GAME_TIME_SECONDS = 60;  // 60 second time attack mode
 
 // Character image
 let characterImage = new Image();
@@ -31,7 +32,10 @@ let gameState = {
     misses: 0,
     difficulty: 1,
     gameWon: false,
-    namePrompted: false
+    namePrompted: false,
+    timedMode: true,  // 60 second time attack mode
+    timeRemaining: GAME_TIME_SECONDS,  // Time remaining in seconds
+    gameStartTime: Date.now()  // Track when game started
 };
 
 // Character object (bouncing up and down)
@@ -40,13 +44,17 @@ let character = {
     y: CANVAS_HEIGHT / 2,
     width: CHARACTER_SIZE,
     height: CHARACTER_SIZE,
+    velocityX: 0,
     velocityY: 0,
     speed: 2 + gameState.difficulty * 0.5,
+    minX: 100,
+    maxX: CANVAS_WIDTH - 100,
     minY: 50,
     maxY: CANVAS_HEIGHT - 150,
-    phase: 0,
-    amplitude: 100,
-    frequency: 0.03 + gameState.difficulty * 0.01
+    moveDirectionX: 1,  // 1 or -1
+    moveDirectionY: 1,  // 1 or -1
+    directionChangeTimer: 0,
+    directionChangeInterval: 120  // Change direction every ~2 seconds at 60 FPS
 };
 
 // Lifebelt object
@@ -235,6 +243,20 @@ function saveHighScore() {
 function update() {
     if (!gameState.running || gameState.gameOver) return;
 
+    // Update timer for timed mode
+    if (gameState.timedMode) {
+        const elapsedSeconds = (Date.now() - gameState.gameStartTime) / 1000;
+        gameState.timeRemaining = Math.max(0, GAME_TIME_SECONDS - elapsedSeconds);
+
+        // End game when time runs out
+        if (gameState.timeRemaining <= 0) {
+            gameState.gameOver = true;
+            gameState.running = false;
+            gameState.gameWon = true;  // Show win screen with final score
+            return;
+        }
+    }
+
     // Update angle based on arrow keys (normalized to lowercase for iPad compatibility)
     // Also check uppercase variants just in case
     if (keys['arrowleft'] || keys['ArrowLeft'] || keys['a'] || keys['A'] || mobileLeft) {
@@ -249,13 +271,47 @@ function update() {
         throwControls.power += throwControls.chargeRate;
     }
 
-    // Update character position (sine wave motion)
-    character.phase += character.frequency;
-    character.y = CANVAS_HEIGHT / 2 + Math.sin(character.phase) * character.amplitude;
+    // Update character position with random directional movement
+    // Randomly change direction every interval
+    character.directionChangeTimer++;
+    if (character.directionChangeTimer >= character.directionChangeInterval) {
+        character.moveDirectionX = Math.random() > 0.5 ? 1 : -1;
+        character.moveDirectionY = Math.random() > 0.5 ? 1 : -1;
+        character.directionChangeTimer = 0;
+        // Occasionally stay still
+        if (Math.random() > 0.7) {
+            character.moveDirectionX = 0;
+        }
+        if (Math.random() > 0.7) {
+            character.moveDirectionY = 0;
+        }
+    }
 
-    // Keep character in bounds
-    if (character.y < character.minY) character.y = character.minY;
-    if (character.y > character.maxY) character.y = character.maxY;
+    // Apply movement in current direction
+    character.velocityX = character.moveDirectionX * character.speed * 0.8;
+    character.velocityY = character.moveDirectionY * character.speed * 0.6;
+
+    // Update position
+    character.x += character.velocityX;
+    character.y += character.velocityY;
+
+    // Keep character in bounds (with bounce)
+    if (character.x < character.minX) {
+        character.x = character.minX;
+        character.moveDirectionX = 1;  // Bounce right
+    }
+    if (character.x > character.maxX) {
+        character.x = character.maxX;
+        character.moveDirectionX = -1;  // Bounce left
+    }
+    if (character.y < character.minY) {
+        character.y = character.minY;
+        character.moveDirectionY = 1;  // Bounce down
+    }
+    if (character.y > character.maxY) {
+        character.y = character.maxY;
+        character.moveDirectionY = -1;  // Bounce up
+    }
 
     // Update lifebelt
     if (lifebelt !== null) {
@@ -413,8 +469,21 @@ function draw() {
     ctx.fillStyle = '#FFFFFF';
     ctx.font = 'bold 16px Arial';
     ctx.fillText(`Score: ${gameState.score}`, 20, 30);
-    ctx.fillText(`Round: ${gameState.round}/${MAX_ROUNDS}`, 20, 55);
-    ctx.fillText(`Hits: ${gameState.hits} | Misses: ${gameState.misses}/3`, 20, 80);
+    
+    if (gameState.timedMode) {
+        // Show time remaining in timed mode
+        const timeColor = gameState.timeRemaining <= 10 ? '#FF6B6B' : '#FFFFFF';
+        ctx.fillStyle = timeColor;
+        ctx.font = 'bold 18px Arial';
+        ctx.fillText(`Time: ${Math.ceil(gameState.timeRemaining)}s`, 20, 55);
+        ctx.font = 'bold 16px Arial';
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fillText(`Catches: ${gameState.hits}`, 20, 80);
+    } else {
+        // Show round progress in classic mode
+        ctx.fillText(`Round: ${gameState.round}/${MAX_ROUNDS}`, 20, 55);
+        ctx.fillText(`Hits: ${gameState.hits} | Misses: ${gameState.misses}/3`, 20, 80);
+    }
 
     ctx.fillStyle = '#FFD700';
     ctx.font = 'bold 14px Arial';
@@ -521,11 +590,19 @@ function draw() {
         ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
         ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-        ctx.fillStyle = '#FFD700';
-        ctx.font = 'bold 60px Arial';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('YOU WIN! 🏆', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 - 80);
+        if (gameState.timedMode) {
+            ctx.fillStyle = '#FFD700';
+            ctx.font = 'bold 60px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('TIME\'S UP! 🎉', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 - 80);
+        } else {
+            ctx.fillStyle = '#FFD700';
+            ctx.font = 'bold 60px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('YOU WIN! 🏆', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 - 80);
+        }
 
         ctx.fillStyle = '#FFFFFF';
         ctx.font = 'bold 28px Arial';
@@ -554,7 +631,10 @@ function restartGame() {
         misses: 0,
         difficulty: 1,
         gameWon: false,
-        namePrompted: false
+        namePrompted: false,
+        timedMode: true,
+        timeRemaining: GAME_TIME_SECONDS,
+        gameStartTime: Date.now()
     };
 
     character = {
@@ -562,13 +642,17 @@ function restartGame() {
         y: CANVAS_HEIGHT / 2,
         width: CHARACTER_SIZE,
         height: CHARACTER_SIZE,
+        velocityX: 0,
         velocityY: 0,
         speed: 2 + gameState.difficulty * 0.5,
+        minX: 100,
+        maxX: CANVAS_WIDTH - 100,
         minY: 50,
         maxY: CANVAS_HEIGHT - 150,
-        phase: 0,
-        amplitude: 100,
-        frequency: 0.03
+        moveDirectionX: 1,
+        moveDirectionY: 1,
+        directionChangeTimer: 0,
+        directionChangeInterval: 120
     };
 
     throwControls = {
