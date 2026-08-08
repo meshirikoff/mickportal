@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mick Pong - Game Portal</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#87CEEB">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 10px;
+        }
+
+        .game-container {
+            position: relative;
+            width: 100%;
+            max-width: 1200px;
+            aspect-ratio: 1200 / 600;
+            background: black;
+            border-radius: 10px;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: rgba(255, 107, 157, 0.9);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .back-button:hover {
+            background: rgba(255, 107, 157, 1);
+            transform: scale(1.05);
+        }
+
+        /* Mobile Controls */
+        .mobileControls {
+            display: none;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 15vh;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 100;
+        }
+
+        .mobile-button {
+            position: absolute;
+            width: 50%;
+            height: 100%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            user-select: none;
+            touch-action: none;
+        }
+
+        .mobile-button:active {
+            background: rgba(255, 107, 157, 0.6);
+            border-color: rgba(255, 107, 157, 0.8);
+        }
+
+        #btnUp {
+            left: 0;
+            bottom: 0;
+            width: 25%;
+        }
+
+        #btnDown {
+            left: 25%;
+            bottom: 0;
+            width: 25%;
+        }
+
+        #btnRestart {
+            right: 0;
+            bottom: 0;
+            width: 50%;
+            font-size: 16px;
+        }
+
+        @media (max-width: 1024px) {
+            .mobileControls {
+                display: block;
+            }
+
+            .back-button {
+                top: 5px;
+                left: 5px;
+                padding: 8px 15px;
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <button class="back-button" onclick="goHome()">← Back to Portal</button>
+        <canvas id="gameCanvas"></canvas>
+        <div class="mobileControls">
+            <button id="btnUp" class="mobile-button">↑ UP</button>
+            <button id="btnDown" class="mobile-button">↓ DOWN</button>
+            <button id="btnRestart" class="mobile-button">Restart</button>
+        </div>
+    </div>
+
+    <script>
+        function goHome() {
+            window.location.href = 'index.html';
+        }
+
+        function playGame(url) {
+            window.location.href = url;
+        }
+    </script>
+
+    <script src="pong.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(err => {
+                console.log('Service Worker registration failed:', err);
+            });
+        }
+    </script>
+</body>
+</html>
