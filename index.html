@@ -185,18 +185,23 @@
         }
 
         .game-title {
-            font-size: 24px;
+            font-size: 28px;
             font-weight: bold;
-            color: white;
-            position: absolute;
-            top: 15px;
-            right: 15px;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-            background: rgba(0, 0, 0, 0.2);
-            padding: 8px 15px;
-            border-radius: 10px;
-            margin: 0;
-            z-index: 10;
+            color: #333;
+            margin: 0 0 8px 0;
+            text-shadow: 2px 2px 0px #FFD700;
+        }
+
+        .game-instructions {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 12px;
+            line-height: 1.4;
+            padding: 10px;
+            background: rgba(255, 215, 0, 0.1);
+            border-left: 3px solid #FFD700;
+            text-align: left;
+            border-radius: 5px;
         }
 
         .game-description {
@@ -333,12 +338,16 @@
         <!-- Game Card: Mick Block -->
         <div class="game-card">
             <div class="game-screenshot">
-                <h2 class="game-title">Mick Block</h2>
                 <div class="badge">Play Now</div>
                 <img id="mickBlockScreenshot" src="images/image_3.png" alt="Mick Block Screenshot" onerror="this.style.display='none'">
                 <div class="game-screenshot-placeholder" id="placeholder">🎮</div>
             </div>
             <div class="game-info">
+                <h2 class="game-title">Mick Block</h2>
+                <div class="game-instructions">
+                    ⌨️ <strong>Controls:</strong> Arrow Keys/A/D to move, Space to attack, C to block<br>
+                    🎯 <strong>Goal:</strong> Defeat all enemies to progress through 20 levels
+                </div>
                 <p class="game-description">Jump, fight, and defeat enemies across 20 challenging levels! Use your skills and power-ups to become unstoppable.</p>
                 <button class="play-button" onclick="playGame('game.html')">Play Game</button>
             </div>
