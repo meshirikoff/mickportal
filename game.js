@@ -109,6 +109,10 @@ const keys = {
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+// Load player image
+const playerImage = new Image();
+playerImage.src = 'images/image_2.png';
+
 // Function to initialize a level with an enemy
 function initializeLevel() {
     const levelStats = {
@@ -772,28 +776,24 @@ function drawGround() {
 }
 
 function drawPlayer() {
-    // Draw player as a red square
-    ctx.fillStyle = '#FF0000';
-    ctx.fillRect(player.x, player.y, player.width, player.height);
-    
-    // Draw player outline
-    ctx.strokeStyle = '#CC0000';
-    ctx.lineWidth = 2;
-    ctx.strokeRect(player.x, player.y, player.width, player.height);
-    
-    // Draw simple eyes
-    ctx.fillStyle = '#000000';
-    ctx.fillRect(player.x + 8, player.y + 8, 6, 6);
-    ctx.fillRect(player.x + 26, player.y + 8, 6, 6);
-    
-    // Draw directional nose/indicator showing which way player is facing
-    ctx.fillStyle = '#FFFF00';
-    if (player.direction > 0) {
-        // Facing right - nose on the right
-        ctx.fillRect(player.x + 32, player.y + 18, 6, 4);
+    // Draw player image
+    if (playerImage.complete) {
+        ctx.save();
+        
+        // Flip image based on direction
+        if (player.direction < 0) {
+            ctx.translate(player.x + player.width, player.y);
+            ctx.scale(-1, 1);
+            ctx.drawImage(playerImage, 0, 0, player.width, player.height);
+        } else {
+            ctx.drawImage(playerImage, player.x, player.y, player.width, player.height);
+        }
+        
+        ctx.restore();
     } else {
-        // Facing left - nose on the left
-        ctx.fillRect(player.x + 2, player.y + 18, 6, 4);
+        // Fallback to placeholder while image loads
+        ctx.fillStyle = '#FF0000';
+        ctx.fillRect(player.x, player.y, player.width, player.height);
     }
     
     // Draw shield when blocking
