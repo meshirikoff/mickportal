@@ -113,7 +113,11 @@ window.addEventListener('keyup', (e) => {
 
 // Mobile button
 const btnThrow = document.getElementById('btnThrow');
+const btnLeft = document.getElementById('btnLeft');
+const btnRight = document.getElementById('btnRight');
 let mobileCharging = false;
+let mobileLeft = false;
+let mobileRight = false;
 
 btnThrow.addEventListener('touchstart', (e) => {
     e.preventDefault();
@@ -147,6 +151,44 @@ btnThrow.addEventListener('mouseup', () => {
         throwControls.isCharging = false;
         throwLifebelt();
     }
+});
+
+// Mobile left button
+btnLeft.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    mobileLeft = true;
+});
+
+btnLeft.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    mobileLeft = false;
+});
+
+btnLeft.addEventListener('mousedown', () => {
+    mobileLeft = true;
+});
+
+btnLeft.addEventListener('mouseup', () => {
+    mobileLeft = false;
+});
+
+// Mobile right button
+btnRight.addEventListener('touchstart', (e) => {
+    e.preventDefault();
+    mobileRight = true;
+});
+
+btnRight.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    mobileRight = false;
+});
+
+btnRight.addEventListener('mousedown', () => {
+    mobileRight = true;
+});
+
+btnRight.addEventListener('mouseup', () => {
+    mobileRight = false;
 });
 
 // Throw lifebelt
@@ -195,10 +237,10 @@ function update() {
 
     // Update angle based on arrow keys (normalized to lowercase for iPad compatibility)
     // Also check uppercase variants just in case
-    if (keys['arrowleft'] || keys['ArrowLeft'] || keys['a'] || keys['A']) {
+    if (keys['arrowleft'] || keys['ArrowLeft'] || keys['a'] || keys['A'] || mobileLeft) {
         throwControls.angle = Math.min(180, throwControls.angle + 2);
     }
-    if (keys['arrowright'] || keys['ArrowRight'] || keys['d'] || keys['D']) {
+    if (keys['arrowright'] || keys['ArrowRight'] || keys['d'] || keys['D'] || mobileRight) {
         throwControls.angle = Math.max(0, throwControls.angle - 2);
     }
 

@@ -82,6 +82,13 @@
             background: rgba(0, 0, 0, 0.3);
             z-index: 100;
             display: flex;
+            flex-direction: column;
+        }
+
+        .control-row {
+            display: flex;
+            flex: 1;
+            width: 100%;
         }
 
         .mobile-button {
@@ -105,8 +112,13 @@
             border-color: rgba(255, 107, 157, 0.8);
         }
 
+        #btnLeft, #btnRight {
+            font-size: 24px;
+        }
+
         #btnThrow {
             font-size: 16px;
+            flex: 2;
         }
 
         @media (max-width: 1024px) {
@@ -128,7 +140,13 @@
         <button class="back-button" onclick="goHome()">← Back to Portal</button>
         <canvas id="gameCanvas"></canvas>
         <div class="mobileControls">
-            <button id="btnThrow" class="mobile-button">🎯 THROW</button>
+            <div class="control-row">
+                <button id="btnLeft" class="mobile-button">⬅️ LEFT</button>
+                <button id="btnRight" class="mobile-button">RIGHT ➡️</button>
+            </div>
+            <div class="control-row">
+                <button id="btnThrow" class="mobile-button">🎯 THROW</button>
+            </div>
         </div>
     </div>
 
