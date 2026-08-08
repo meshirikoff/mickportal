@@ -52,80 +52,116 @@ let character = {
 // Lifebelt object
 let lifebelt = null;
 
+// Throw controls
+let throwControls = {
+    angle: 45,  // Degrees, 0 = right, 90 = up
+    power: 0,   // 0-100
+    maxPower: 100,
+    isCharging: false,
+    chargeRate: 2  // Power per frame
+};
+
 // Input handling
 const keys = {};
 window.addEventListener('keydown', (e) => {
     keys[e.key] = true;
     
-    if (e.key === ' ' || e.key === 'Enter') {
+    if (e.key === ' ') {
+        e.preventDefault();
+        if (!gameState.gameOver && !gameState.gameWon) {
+            throwControls.isCharging = true;
+            throwControls.power = 0;
+        }
+    }
+    
+    if (e.key === 'Enter') {
         e.preventDefault();
         if (gameState.gameOver && !gameState.gameWon) {
             restartGame();
-        } else if (gameState.gameWon && e.key === 'Enter') {
+        } else if (gameState.gameWon) {
             if (!gameState.namePrompted) {
                 saveHighScore();
             } else {
                 location.reload();
             }
-        } else if (!gameState.gameOver && e.key === ' ') {
-            throwLifebelt();
         }
     }
 });
 
 window.addEventListener('keyup', (e) => {
     keys[e.key] = false;
+    
+    if (e.key === ' ' && throwControls.isCharging && !gameState.gameOver && lifebelt === null) {
+        e.preventDefault();
+        throwControls.isCharging = false;
+        throwLifebelt();
+    }
 });
 
 // Mobile button
 const btnThrow = document.getElementById('btnThrow');
+let mobileCharging = false;
+
 btnThrow.addEventListener('touchstart', (e) => {
     e.preventDefault();
-    if (!gameState.gameOver) {
+    if (!gameState.gameOver && !gameState.gameWon && lifebelt === null) {
+        mobileCharging = true;
+        throwControls.isCharging = true;
+        throwControls.power = 0;
+    }
+});
+
+btnThrow.addEventListener('touchend', (e) => {
+    e.preventDefault();
+    if (mobileCharging) {
+        mobileCharging = false;
+        throwControls.isCharging = false;
         throwLifebelt();
     }
 });
 
 btnThrow.addEventListener('mousedown', () => {
-    if (!gameState.gameOver) {
+    if (!gameState.gameOver && !gameState.gameWon && lifebelt === null) {
+        mobileCharging = true;
+        throwControls.isCharging = true;
+        throwControls.power = 0;
+    }
+});
+
+btnThrow.addEventListener('mouseup', () => {
+    if (mobileCharging) {
+        mobileCharging = false;
+        throwControls.isCharging = false;
         throwLifebelt();
     }
 });
 
-// Click to throw
-canvas.addEventListener('click', (e) => {
-    if (!gameState.gameOver) {
-        throwLifebelt(e);
-    }
-});
-
 // Throw lifebelt
-function throwLifebelt(event) {
-    if (lifebelt !== null) return; // Already thrown
+function throwLifebelt() {
+    if (lifebelt !== null || throwControls.power === 0) return; // Already thrown or no power
 
-    let throwX = CANVAS_WIDTH / 2;
-    let throwY = CANVAS_HEIGHT - 80;
+    const throwX = CANVAS_WIDTH / 2;
+    const throwY = CANVAS_HEIGHT - 80;
 
-    // If clicked, use click position
-    if (event && event.clientX) {
-        const rect = canvas.getBoundingClientRect();
-        throwX = (event.clientX - rect.left) * (CANVAS_WIDTH / rect.width);
-        throwY = (event.clientY - rect.top) * (CANVAS_HEIGHT / rect.height);
-    }
-
-    // Calculate direction to throw
-    const dx = character.x - throwX;
-    const dy = character.y - throwY;
-    const distance = Math.sqrt(dx * dx + dy * dy);
+    // Convert angle to radians
+    const angleRad = (throwControls.angle * Math.PI) / 180;
+    
+    // Calculate velocity based on angle and power
+    const speed = (throwControls.power / throwControls.maxPower) * THROW_SPEED * 2; // Up to 2x base speed
+    const vx = Math.cos(angleRad) * speed;
+    const vy = -Math.sin(angleRad) * speed;  // Negative because canvas Y increases downward
     
     lifebelt = {
         x: throwX,
         y: throwY,
-        vx: (dx / distance) * THROW_SPEED,
-        vy: (dy / distance) * THROW_SPEED,
+        vx: vx,
+        vy: vy,
         radius: LIFEBELT_RADIUS,
         trail: []
     };
+    
+    // Reset power
+    throwControls.power = 0;
 }
 
 // Save high score to leaderboard
@@ -143,6 +179,19 @@ function saveHighScore() {
 // Update game state
 function update() {
     if (!gameState.running || gameState.gameOver) return;
+
+    // Update angle based on arrow keys
+    if (keys['ArrowLeft'] || keys['a']) {
+        throwControls.angle = Math.min(180, throwControls.angle + 2);
+    }
+    if (keys['ArrowRight'] || keys['d']) {
+        throwControls.angle = Math.max(0, throwControls.angle - 2);
+    }
+
+    // Update power when charging
+    if (throwControls.isCharging && throwControls.power < throwControls.maxPower) {
+        throwControls.power += throwControls.chargeRate;
+    }
 
     // Update character position (sine wave motion)
     character.phase += character.frequency;
@@ -315,15 +364,78 @@ function draw() {
     ctx.font = 'bold 14px Arial';
     ctx.fillText(`Difficulty: ${'⭐'.repeat(gameState.difficulty)}`, 320, 30);
 
+    // Draw throw launcher (bottom center) with direction indicator
+    const launcherX = CANVAS_WIDTH / 2;
+    const launcherY = CANVAS_HEIGHT - 80;
+    
+    // Draw launcher base
+    ctx.fillStyle = '#8B4513';
+    ctx.fillRect(launcherX - 30, launcherY - 10, 60, 20);
+    
+    // Draw direction arrows
+    const angleRad = (throwControls.angle * Math.PI) / 180;
+    const arrowLength = 60;
+    const arrowEndX = launcherX + Math.cos(angleRad) * arrowLength;
+    const arrowEndY = launcherY - Math.sin(angleRad) * arrowLength;
+    
+    ctx.strokeStyle = throwControls.isCharging ? '#FF6B6B' : '#FFD700';
+    ctx.lineWidth = 3;
+    ctx.beginPath();
+    ctx.moveTo(launcherX, launcherY);
+    ctx.lineTo(arrowEndX, arrowEndY);
+    ctx.stroke();
+    
+    // Arrow head
+    const arrowSize = 15;
+    const angle1 = angleRad + Math.PI * 0.85;
+    const angle2 = angleRad - Math.PI * 0.85;
+    ctx.beginPath();
+    ctx.moveTo(arrowEndX, arrowEndY);
+    ctx.lineTo(arrowEndX + Math.cos(angle1) * arrowSize, arrowEndY - Math.sin(angle1) * arrowSize);
+    ctx.lineTo(arrowEndX + Math.cos(angle2) * arrowSize, arrowEndY - Math.sin(angle2) * arrowSize);
+    ctx.closePath();
+    ctx.fillStyle = throwControls.isCharging ? '#FF6B6B' : '#FFD700';
+    ctx.fill();
+
+    // Draw power meter
+    const powerBarWidth = 200;
+    const powerBarHeight = 20;
+    const powerBarX = CANVAS_WIDTH / 2 - powerBarWidth / 2;
+    const powerBarY = CANVAS_HEIGHT - 50;
+    
+    // Power bar background
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+    ctx.fillRect(powerBarX - 5, powerBarY - 5, powerBarWidth + 10, powerBarHeight + 10);
+    
+    // Power bar border
+    ctx.strokeStyle = '#FFD700';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(powerBarX, powerBarY, powerBarWidth, powerBarHeight);
+    
+    // Power bar fill
+    if (throwControls.isCharging) {
+        const powerPercent = throwControls.power / throwControls.maxPower;
+        ctx.fillStyle = powerPercent < 0.5 ? '#00FF00' : (powerPercent < 0.8 ? '#FFAA00' : '#FF0000');
+        ctx.fillRect(powerBarX, powerBarY, powerBarWidth * powerPercent, powerBarHeight);
+    }
+    
+    // Power text
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 12px Arial';
+    ctx.textAlign = 'center';
+    ctx.fillText(`POWER: ${Math.round((throwControls.power / throwControls.maxPower) * 100)}%`, powerBarX + powerBarWidth / 2, powerBarY + 28);
+
     // Draw instructions
     ctx.fillStyle = 'rgba(0, 0, 0, 0.2)';
-    ctx.fillRect(CANVAS_WIDTH - 350, 0, 350, 80);
+    ctx.fillRect(CANVAS_WIDTH - 400, 0, 400, 100);
 
     ctx.fillStyle = '#FFFFFF';
-    ctx.font = 'bold 14px Arial';
+    ctx.font = 'bold 12px Arial';
     ctx.textAlign = 'right';
-    ctx.fillText('Click or press SPACE to throw', CANVAS_WIDTH - 20, 30);
-    ctx.fillText('Aim for the neck! ⭕', CANVAS_WIDTH - 20, 55);
+    ctx.fillText('← ARROW LEFT/RIGHT → to aim', CANVAS_WIDTH - 20, 25);
+    ctx.fillText('SPACE to charge power', CANVAS_WIDTH - 20, 45);
+    ctx.fillText('Release SPACE to throw', CANVAS_WIDTH - 20, 65);
+    ctx.fillText('Aim for the neck! ⭕', CANVAS_WIDTH - 20, 85);
     ctx.textAlign = 'left';
 
     // Draw game over screen
@@ -343,7 +455,7 @@ function draw() {
         ctx.fillText(`Successful Catches: ${gameState.hits}`, CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 50);
 
         ctx.font = '20px Arial';
-        ctx.fillText('Press SPACE to restart', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 120);
+        ctx.fillText('Press ENTER to restart', CANVAS_WIDTH / 2, CANVAS_HEIGHT / 2 + 120);
 
         ctx.textAlign = 'left';
     }
@@ -401,6 +513,14 @@ function restartGame() {
         phase: 0,
         amplitude: 100,
         frequency: 0.03
+    };
+
+    throwControls = {
+        angle: 45,
+        power: 0,
+        maxPower: 100,
+        isCharging: false,
+        chargeRate: 2
     };
 
     lifebelt = null;
