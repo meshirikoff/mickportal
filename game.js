@@ -1104,6 +1104,108 @@ function draw() {
     drawUI();
 }
 
+// Mobile Touch Controls
+const mobileControls = {
+    btnLeft: document.getElementById('btnLeft'),
+    btnRight: document.getElementById('btnRight'),
+    btnJump: document.getElementById('btnJump'),
+    btnAction: document.getElementById('btnAction')
+};
+
+if (mobileControls.btnLeft) {
+    // Left button (move left)
+    mobileControls.btnLeft.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        keys.a = true;
+    });
+    mobileControls.btnLeft.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        keys.a = false;
+    });
+    mobileControls.btnLeft.addEventListener('mousedown', () => keys.a = true);
+    mobileControls.btnLeft.addEventListener('mouseup', () => keys.a = false);
+    mobileControls.btnLeft.addEventListener('mouseleave', () => keys.a = false);
+    
+    // Right button (move right)
+    mobileControls.btnRight.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        keys.d = true;
+    });
+    mobileControls.btnRight.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        keys.d = false;
+    });
+    mobileControls.btnRight.addEventListener('mousedown', () => keys.d = true);
+    mobileControls.btnRight.addEventListener('mouseup', () => keys.d = false);
+    mobileControls.btnRight.addEventListener('mouseleave', () => keys.d = false);
+    
+    // Jump button
+    mobileControls.btnJump.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        if (player.isGrounded) {
+            player.velocityY = -player.jumpPower;
+            player.isGrounded = false;
+        }
+    });
+    mobileControls.btnJump.addEventListener('mousedown', () => {
+        if (player.isGrounded) {
+            player.velocityY = -player.jumpPower;
+            player.isGrounded = false;
+        }
+    });
+    
+    // Action button (Attack/Shoot)
+    mobileControls.btnAction.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        // Trigger attack action
+        if (player.playerLevel >= 2 && gun.shootCooldown <= 0) {
+            const directionToEnemy = enemy.x > player.x ? 1 : -1;
+            gun.projectiles.push({
+                x: player.x + (directionToEnemy > 0 ? player.width : 0),
+                y: player.y + 15,
+                width: 6,
+                height: 6,
+                velocityX: 7 * directionToEnemy,
+                velocityY: 0,
+                damage: gun.damage,
+                maxDistance: 500,
+                distanceTraveled: 0,
+                playerFired: true
+            });
+            gun.shootCooldown = gun.shootMaxCooldown;
+        } else if (player.playerLevel < 2 && !stick.isActive) {
+            stick.isActive = true;
+            stick.swingDuration = 0;
+            stick.swingAngle = player.direction > 0 ? -45 : 45;
+            stick.direction = player.direction;
+        }
+    });
+    mobileControls.btnAction.addEventListener('mousedown', () => {
+        // Trigger attack action
+        if (player.playerLevel >= 2 && gun.shootCooldown <= 0) {
+            const directionToEnemy = enemy.x > player.x ? 1 : -1;
+            gun.projectiles.push({
+                x: player.x + (directionToEnemy > 0 ? player.width : 0),
+                y: player.y + 15,
+                width: 6,
+                height: 6,
+                velocityX: 7 * directionToEnemy,
+                velocityY: 0,
+                damage: gun.damage,
+                maxDistance: 500,
+                distanceTraveled: 0,
+                playerFired: true
+            });
+            gun.shootCooldown = gun.shootMaxCooldown;
+        } else if (player.playerLevel < 2 && !stick.isActive) {
+            stick.isActive = true;
+            stick.swingDuration = 0;
+            stick.swingAngle = player.direction > 0 ? -45 : 45;
+            stick.direction = player.direction;
+        }
+    });
+}
+
 // Game Loop
 function gameLoop() {
     update();
