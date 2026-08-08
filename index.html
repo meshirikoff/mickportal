@@ -135,10 +135,6 @@
             #mobileControls {
                 display: none !important;
             }
-            
-            #bottomImageContainer {
-                display: block;
-            }
         }
         
         /* Tablets (iPad, etc) */
@@ -156,20 +152,9 @@
                 width: 100vw;
                 max-height: 75vh;
             }
-            
-            #bottomImageContainer {
-                display: block;
-                max-height: 15vh;
-                margin-top: 5px;
-            }
-            
-            #bottomImage {
-                max-width: 30% !important;
-                max-height: 12vh;
-            }
         }
         
-        /* Mobile phones - hide image, maximize game */
+        /* Mobile phones - maximize game */
         @media (max-width: 599px) {
             #mobileControls {
                 display: flex !important;
@@ -186,29 +171,12 @@
                 height: 100vh;
                 max-width: 100vw;
             }
-            
-            #bottomImageContainer {
-                display: none !important;
-            }
         }
         
-        /* Bottom Image Display */
-        #bottomImageContainer {
-            margin-top: 10px;
-            text-align: center;
-            width: 100vw;
-            max-width: 1200px;
-            padding: 0 10px;
-            box-sizing: border-box;
-            flex-shrink: 0;
-            display: none;
-        }
+        /* Bottom Image Display - REMOVED */
         
         #bottomImage {
-            max-width: 50%;
-            height: auto;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            display: none;
         }
         
         /* Sponsor Banner */
@@ -296,10 +264,6 @@
                 <button class="control-btn" id="btnAction">⚡ ACT</button>
             </div>
         </div>
-    </div>
-    
-    <div id="bottomImageContainer">
-        <img id="bottomImage" src="images/image_1.png" alt="Game Illustration">
     </div>
     
     <div id="sponsorContainer">
