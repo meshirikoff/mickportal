@@ -28,9 +28,9 @@ function saveHighScore() {
 // Player Object
 const player = {
     x: 100,
-    y: GROUND_Y - 70,
-    width: 60,
-    height: 60,
+    y: GROUND_Y - 160,
+    width: 160,
+    height: 160,
     velocityX: 0,
     velocityY: 0,
     speed: 5,
@@ -154,8 +154,8 @@ playerImage.onerror = function() {
 
 // Sprite sheet configuration
 const SPRITE_SHEET = {
-    frameWidth: 100,
-    frameHeight: 80,
+    frameWidth: 256,
+    frameHeight: 219,
     cols: 4,
     rows: 7,
     animations: {
