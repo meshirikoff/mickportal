@@ -550,6 +550,31 @@ function update() {
     // Update gun weapon (unlocked at player level 2) - now fires on space key
     if (player.playerLevel >= 2) {
         gun.shootCooldown -= 16;
+        
+        // Auto-fire at enemy when gun is ready and enemy is active
+        if (gun.shootCooldown <= 0 && enemy.isActive) {
+            const directionToEnemy = enemy.x > player.x ? 1 : -1;
+            
+            // Calculate distance to enemy
+            const distToEnemy = Math.abs(enemy.x - player.x);
+            
+            // Auto-fire if enemy is within range (500 pixels)
+            if (distToEnemy < 500) {
+                gun.projectiles.push({
+                    x: player.x + (directionToEnemy > 0 ? player.width : 0),
+                    y: player.y + 15,
+                    width: 6,
+                    height: 6,
+                    velocityX: 7 * directionToEnemy,
+                    velocityY: 0,
+                    damage: gun.damage,
+                    maxDistance: 500,
+                    distanceTraveled: 0,
+                    playerFired: true  // Mark as auto-fire from system
+                });
+                gun.shootCooldown = gun.shootMaxCooldown;
+            }
+        }
     }
     
     // Update gun projectiles
