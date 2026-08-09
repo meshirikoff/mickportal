@@ -1,7 +1,7 @@
 // Game Constants
 const CANVAS_WIDTH = 1200;
 const CANVAS_HEIGHT = 600;
-const GROUND_HEIGHT = 60;
+const GROUND_HEIGHT = 2;
 const GROUND_Y = CANVAS_HEIGHT - GROUND_HEIGHT;
 
 // Game State
@@ -159,12 +159,12 @@ const SPRITE_SHEET = {
     cols: 4,
     rows: 7,
     animations: {
-        idle: { frames: [0, 1], speed: 0.04 },           // Row 0: idle poses
-        walk: { frames: [4, 5, 6, 7, 8, 9, 10, 11], speed: 0.06 },  // Rows 1-2: walking cycle
-        swordAttack: { frames: [12, 13, 14, 15, 16, 17, 18, 19], speed: 0.05 }, // Rows 3-4: sword swing
-        gunShoot: { frames: [20, 21, 22, 23, 24, 25, 26, 27], speed: 0.04 },     // Rows 4-5: gun shooting
-        block: { frames: [28, 29], speed: 0.04 },        // Row 6: blocking
-        jump: { frames: [30, 31], speed: 0.05 }         // Row 6: jumping
+        idle: { frames: [0, 1], speed: 0.02 },           // Row 0: idle poses
+        walk: { frames: [4, 5, 6, 7, 8, 9, 10, 11], speed: 0.03 },  // Rows 1-2: walking cycle
+        swordAttack: { frames: [12, 13, 14, 15, 16, 17, 18, 19], speed: 0.02 }, // Rows 3-4: sword swing
+        gunShoot: { frames: [20, 21, 22, 23, 24, 25, 26, 27], speed: 0.02 },     // Rows 4-5: gun shooting
+        block: { frames: [28, 29], speed: 0.02 },        // Row 6: blocking
+        jump: { frames: [30, 31], speed: 0.03 }         // Row 6: jumping
     }
 };
 
@@ -172,7 +172,8 @@ const SPRITE_SHEET = {
 const animationState = {
     currentAnimation: 'idle',
     frameIndex: 0,
-    frameCounter: 0
+    frameCounter: 0,
+    framesSinceChange: 0  // Track frames since last animation change
 };
 
 // Function to initialize a level with an enemy
@@ -893,11 +894,15 @@ function updateAnimation() {
         nextAnimation = 'idle';
     }
     
-    // Reset animation if it changed
-    if (nextAnimation !== animationState.currentAnimation) {
+    // Only switch animation if we've held the current one for at least 3 frames
+    // This prevents flickering when animation conditions change rapidly
+    if (nextAnimation !== animationState.currentAnimation && animationState.framesSinceChange >= 3) {
         animationState.currentAnimation = nextAnimation;
         animationState.frameIndex = 0;
         animationState.frameCounter = 0;
+        animationState.framesSinceChange = 0;
+    } else if (nextAnimation === animationState.currentAnimation) {
+        animationState.framesSinceChange++;
     }
     
     // Update frame counter
