@@ -49,6 +49,22 @@ const player = {
     playerLevel: 1
 };
 
+// Ground Object
+const ground = {
+    x: 0,
+    y: GROUND_Y,
+    width: CANVAS_WIDTH,
+    height: GROUND_HEIGHT,
+    velocityX: 0,
+    velocityY: 0,
+    gravity: 0.4,
+    friction: 0.95,
+    mass: 1000,  // Heavy object
+    isMovable: false,
+    color: '#228B22',
+    borderColor: '#1a6b1a'
+};
+
 // Stick Weapon Object
 const stick = {
     x: player.x + player.width,
@@ -423,9 +439,33 @@ document.addEventListener('keyup', (e) => {
     if (e.key.toLowerCase() === 'c') keys.c = false;
 });
 
+// Ground Physics
+function updateGroundPhysics() {
+    // Apply gravity to ground if movable
+    if (ground.isMovable) {
+        ground.velocityY += ground.gravity;
+        ground.velocityX *= ground.friction;  // Apply friction
+        
+        // Update ground position
+        ground.y += ground.velocityY;
+        ground.x += ground.velocityX;
+        
+        // Keep ground within canvas bounds
+        if (ground.y + ground.height >= CANVAS_HEIGHT) {
+            ground.y = CANVAS_HEIGHT - ground.height;
+            ground.velocityY = 0;
+        }
+        if (ground.x < 0) ground.x = 0;
+        if (ground.x + ground.width > CANVAS_WIDTH) ground.x = CANVAS_WIDTH - ground.width;
+    }
+}
+
 // Update Game State
 function update() {
     if (gameState.gameOver || gameState.gameWon) return;
+
+    // Update ground physics
+    updateGroundPhysics();
 
     // Handle player movement
     if (keys.ArrowLeft || keys.a) {
@@ -449,10 +489,9 @@ function update() {
     if (player.x < 0) player.x = 0;
     if (player.x + player.width > CANVAS_WIDTH) player.x = CANVAS_WIDTH - player.width;
     
-    // Check if player is on floating platform (above visual ground)
-    const FLOATING_PLATFORM_Y = 200;
-    if (player.y + player.height >= FLOATING_PLATFORM_Y) {
-        player.y = FLOATING_PLATFORM_Y - player.height;
+    // Check if player is on ground
+    if (player.y + player.height >= ground.y) {
+        player.y = ground.y - player.height;
         player.velocityY = 0;
         player.isGrounded = true;
     } else {
@@ -653,9 +692,8 @@ function updateEnemy() {
     if (enemy.x + enemy.width > CANVAS_WIDTH) enemy.x = CANVAS_WIDTH - enemy.width;
     
     // Ground collision
-    const FLOATING_PLATFORM_Y = 200;
-    if (enemy.y + enemy.height >= FLOATING_PLATFORM_Y) {
-        enemy.y = FLOATING_PLATFORM_Y - enemy.height;
+    if (enemy.y + enemy.height >= ground.y) {
+        enemy.y = ground.y - enemy.height;
         enemy.velocityY = 0;
         enemy.isGrounded = true;
     } else {
@@ -828,13 +866,13 @@ function checkCollision(rect1, rect2) {
 
 // Draw Functions
 function drawGround() {
-    ctx.fillStyle = '#228B22'; // Green color for grass
-    ctx.fillRect(0, GROUND_Y, CANVAS_WIDTH, GROUND_HEIGHT);
+    ctx.fillStyle = ground.color;
+    ctx.fillRect(ground.x, ground.y, ground.width, ground.height);
     
     // Draw a border for the ground
-    ctx.strokeStyle = '#1a6b1a';
+    ctx.strokeStyle = ground.borderColor;
     ctx.lineWidth = 2;
-    ctx.strokeRect(0, GROUND_Y, CANVAS_WIDTH, GROUND_HEIGHT);
+    ctx.strokeRect(ground.x, ground.y, ground.width, ground.height);
 }
 
 function updateAnimation() {
