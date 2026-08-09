@@ -159,12 +159,12 @@ const SPRITE_SHEET = {
     cols: 4,
     rows: 7,
     animations: {
-        idle: { frames: [0, 1], speed: 0.02 },           // Row 0: idle poses
-        walk: { frames: [4, 5, 6, 7, 8, 9, 10, 11], speed: 0.03 },  // Rows 1-2: walking cycle
-        swordAttack: { frames: [12, 13, 14, 15, 16, 17, 18, 19], speed: 0.02 }, // Rows 3-4: sword swing
-        gunShoot: { frames: [20, 21, 22, 23, 24, 25, 26, 27], speed: 0.02 },     // Rows 4-5: gun shooting
-        block: { frames: [28, 29], speed: 0.02 },        // Row 6: blocking
-        jump: { frames: [30, 31], speed: 0.03 }         // Row 6: jumping
+        idle: { frames: [0, 1, 2, 3], speed: 0.04 },           // Row 0: idle poses (stay on last frame)
+        walk: { frames: [4, 5, 6, 7], speed: 0.08 },            // Row 1: walking cycle
+        swordAttack: { frames: [8, 9, 10, 11, 12, 13, 14, 15], speed: 0.1, hold: true }, // Rows 2-3: sword swing (hold on last frame)
+        gunShoot: { frames: [16, 17, 18, 19, 20, 21, 22, 23], speed: 0.1, hold: true },  // Rows 4-5: gun shooting (hold on last frame)
+        jump: { frames: [24, 25, 26], speed: 0.12, hold: true },   // Row 6: jumping/landing (hold on landing frame)
+        block: { frames: [27], speed: 0.02 }                   // Row 6: blocking with shield
     }
 };
 
@@ -911,7 +911,16 @@ function updateAnimation() {
     
     if (animationState.frameCounter >= 1) {
         animationState.frameCounter = 0;
-        animationState.frameIndex = (animationState.frameIndex + 1) % anim.frames.length;
+        
+        // For animations that should hold on last frame, don't loop
+        const isAtLastFrame = animationState.frameIndex >= anim.frames.length - 1;
+        if (anim.hold && isAtLastFrame) {
+            // Stay on last frame
+            animationState.frameIndex = anim.frames.length - 1;
+        } else {
+            // Loop the animation
+            animationState.frameIndex = (animationState.frameIndex + 1) % anim.frames.length;
+        }
     }
 }
 
