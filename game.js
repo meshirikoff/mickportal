@@ -1,7 +1,7 @@
 // Game Constants
 const CANVAS_WIDTH = 1200;
 const CANVAS_HEIGHT = 600;
-const GROUND_HEIGHT = 40;
+const GROUND_HEIGHT = 180;
 const GROUND_Y = CANVAS_HEIGHT - GROUND_HEIGHT;
 
 // Game State
@@ -28,15 +28,15 @@ function saveHighScore() {
 // Player Object
 const player = {
     x: 100,
-    y: GROUND_Y - 350,
+    y: GROUND_Y - 60,
     width: 60,
     height: 60,
     velocityX: 0,
-    velocityY: -8,
+    velocityY: 0,
     speed: 5,
     jumpPower: 12,
     gravity: 0.6,
-    isGrounded: false,
+    isGrounded: true,
     hp: 100,
     maxHp: 100,
     direction: 1,  // 1 for right, -1 for left
@@ -143,12 +143,12 @@ const SPRITE_SHEET = {
     cols: 4,
     rows: 7,
     animations: {
-        idle: { frames: [0, 1], speed: 0.1 },           // Row 0: idle poses
-        walk: { frames: [4, 5, 6, 7, 8, 9, 10, 11], speed: 0.15 },  // Rows 1-2: walking cycle
-        swordAttack: { frames: [12, 13, 14, 15, 16, 17, 18, 19], speed: 0.12 }, // Rows 3-4: sword swing
-        gunShoot: { frames: [20, 21, 22, 23, 24, 25, 26, 27], speed: 0.1 },     // Rows 4-5: gun shooting
-        block: { frames: [28, 29], speed: 0.1 },        // Row 6: blocking
-        jump: { frames: [30, 31], speed: 0.15 }         // Row 6: jumping
+        idle: { frames: [0, 1], speed: 0.04 },           // Row 0: idle poses
+        walk: { frames: [4, 5, 6, 7, 8, 9, 10, 11], speed: 0.06 },  // Rows 1-2: walking cycle
+        swordAttack: { frames: [12, 13, 14, 15, 16, 17, 18, 19], speed: 0.05 }, // Rows 3-4: sword swing
+        gunShoot: { frames: [20, 21, 22, 23, 24, 25, 26, 27], speed: 0.04 },     // Rows 4-5: gun shooting
+        block: { frames: [28, 29], speed: 0.04 },        // Row 6: blocking
+        jump: { frames: [30, 31], speed: 0.05 }         // Row 6: jumping
     }
 };
 
@@ -327,7 +327,7 @@ function initializeLevel() {
     const stats = levelStats[gameState.level] || levelStats[5];
 
     enemy.x = CANVAS_WIDTH - 150;
-    enemy.y = GROUND_Y - 200;
+    enemy.y = GROUND_Y - 40;
     enemy.width = 40;
     enemy.height = 40;
     enemy.hp = stats.hp;
@@ -449,9 +449,10 @@ function update() {
     if (player.x < 0) player.x = 0;
     if (player.x + player.width > CANVAS_WIDTH) player.x = CANVAS_WIDTH - player.width;
     
-    // Check if player is on ground
-    if (player.y + player.height >= GROUND_Y) {
-        player.y = GROUND_Y - player.height;
+    // Check if player is on floating platform (above visual ground)
+    const FLOATING_PLATFORM_Y = 200;
+    if (player.y + player.height >= FLOATING_PLATFORM_Y) {
+        player.y = FLOATING_PLATFORM_Y - player.height;
         player.velocityY = 0;
         player.isGrounded = true;
     } else {
@@ -652,8 +653,9 @@ function updateEnemy() {
     if (enemy.x + enemy.width > CANVAS_WIDTH) enemy.x = CANVAS_WIDTH - enemy.width;
     
     // Ground collision
-    if (enemy.y + enemy.height >= GROUND_Y) {
-        enemy.y = GROUND_Y - enemy.height;
+    const FLOATING_PLATFORM_Y = 200;
+    if (enemy.y + enemy.height >= FLOATING_PLATFORM_Y) {
+        enemy.y = FLOATING_PLATFORM_Y - enemy.height;
         enemy.velocityY = 0;
         enemy.isGrounded = true;
     } else {
