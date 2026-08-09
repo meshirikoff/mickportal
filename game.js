@@ -28,7 +28,7 @@ function saveHighScore() {
 // Player Object
 const player = {
     x: 100,
-    y: GROUND_Y - 60,
+          y: GROUND_Y - 60,
     width: 60,
     height: 60,
     velocityX: 0,
@@ -122,9 +122,32 @@ const keys = {
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-// Load player image
+// Load player sprite sheet
 const playerImage = new Image();
-playerImage.src = 'images/image_2.png';
+playerImage.src = 'images/player_spritesheet.png';
+
+// Sprite sheet configuration
+const SPRITE_SHEET = {
+    frameWidth: 100,
+    frameHeight: 80,
+    cols: 4,
+    rows: 7,
+    animations: {
+        idle: { frames: [0, 1], speed: 0.1 },           // Row 0: idle poses
+        walk: { frames: [4, 5, 6, 7, 8, 9, 10, 11], speed: 0.15 },  // Rows 1-2: walking cycle
+        swordAttack: { frames: [12, 13, 14, 15, 16, 17, 18, 19], speed: 0.12 }, // Rows 3-4: sword swing
+        gunShoot: { frames: [20, 21, 22, 23, 24, 25, 26, 27], speed: 0.1 },     // Rows 4-5: gun shooting
+        block: { frames: [28, 29], speed: 0.1 },        // Row 6: blocking
+        jump: { frames: [30, 31], speed: 0.15 }         // Row 6: jumping
+    }
+};
+
+// Player animation state
+const animationState = {
+    currentAnimation: 'idle',
+    frameIndex: 0,
+    frameCounter: 0
+};
 
 // Function to initialize a level with an enemy
 function initializeLevel() {
@@ -802,8 +825,56 @@ function drawGround() {
     ctx.strokeRect(0, GROUND_Y, CANVAS_WIDTH, GROUND_HEIGHT);
 }
 
+function updateAnimation() {
+    // Determine current animation state
+    let nextAnimation = 'idle';
+    
+    if (!player.isGrounded) {
+        nextAnimation = 'jump';
+    } else if (player.isBlocking) {
+        nextAnimation = 'block';
+    } else if (stick.isActive && player.playerLevel < 2) {
+        nextAnimation = 'swordAttack';
+    } else if (gun.shootCooldown > gun.shootMaxCooldown - 100 && player.playerLevel >= 2) {
+        nextAnimation = 'gunShoot';
+    } else if (Math.abs(player.velocityX) > 0.5) {
+        nextAnimation = 'walk';
+    } else {
+        nextAnimation = 'idle';
+    }
+    
+    // Reset animation if it changed
+    if (nextAnimation !== animationState.currentAnimation) {
+        animationState.currentAnimation = nextAnimation;
+        animationState.frameIndex = 0;
+        animationState.frameCounter = 0;
+    }
+    
+    // Update frame counter
+    const anim = SPRITE_SHEET.animations[animationState.currentAnimation];
+    animationState.frameCounter += anim.speed;
+    
+    if (animationState.frameCounter >= 1) {
+        animationState.frameCounter = 0;
+        animationState.frameIndex = (animationState.frameIndex + 1) % anim.frames.length;
+    }
+}
+
 function drawPlayer() {
-    // Draw player image
+    // Update animation state
+    updateAnimation();
+    
+    // Get current frame from animation
+    const anim = SPRITE_SHEET.animations[animationState.currentAnimation];
+    const frameNumber = anim.frames[animationState.frameIndex];
+    
+    // Calculate sprite sheet position
+    const spriteCol = frameNumber % SPRITE_SHEET.cols;
+    const spriteRow = Math.floor(frameNumber / SPRITE_SHEET.cols);
+    const sourceX = spriteCol * SPRITE_SHEET.frameWidth;
+    const sourceY = spriteRow * SPRITE_SHEET.frameHeight;
+    
+    // Draw player sprite
     if (playerImage.complete) {
         ctx.save();
         
@@ -811,9 +882,21 @@ function drawPlayer() {
         if (player.direction < 0) {
             ctx.translate(player.x + player.width, player.y);
             ctx.scale(-1, 1);
-            ctx.drawImage(playerImage, 0, 0, player.width, player.height);
+            ctx.drawImage(
+                playerImage,
+                sourceX, sourceY,
+                SPRITE_SHEET.frameWidth, SPRITE_SHEET.frameHeight,
+                0, 0,
+                player.width, player.height
+            );
         } else {
-            ctx.drawImage(playerImage, player.x, player.y, player.width, player.height);
+            ctx.drawImage(
+                playerImage,
+                sourceX, sourceY,
+                SPRITE_SHEET.frameWidth, SPRITE_SHEET.frameHeight,
+                player.x, player.y,
+                player.width, player.height
+            );
         }
         
         ctx.restore();
@@ -1150,8 +1233,6 @@ function draw() {
     // Draw game objects
     drawGround();
     drawPlayer();
-    drawStick();
-    drawGun();
     drawEnemy();
     drawProjectiles();
     drawGunProjectiles();
