@@ -28,7 +28,7 @@ function saveHighScore() {
 // Player Object
 const player = {
     x: 100,
-          y: GROUND_Y - 60,
+         y: GROUND_Y - 60,
     width: 60,
     height: 60,
     velocityX: 0,
@@ -124,7 +124,17 @@ const ctx = canvas.getContext('2d');
 
 // Load player sprite sheet
 const playerImage = new Image();
+playerImage.crossOrigin = 'anonymous';
 playerImage.src = 'images/player_spritesheet.png';
+
+// Log image loading for debugging
+playerImage.onload = function() {
+    console.log('Player sprite sheet loaded successfully!', this.width, 'x', this.height);
+};
+
+playerImage.onerror = function() {
+    console.error('Failed to load player sprite sheet from:', playerImage.src);
+};
 
 // Sprite sheet configuration
 const SPRITE_SHEET = {
@@ -875,7 +885,7 @@ function drawPlayer() {
     const sourceY = spriteRow * SPRITE_SHEET.frameHeight;
     
     // Draw player sprite
-    if (playerImage.complete) {
+    if (playerImage.complete && playerImage.naturalWidth > 0) {
         ctx.save();
         
         // Flip image based on direction
