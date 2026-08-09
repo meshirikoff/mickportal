@@ -15,8 +15,8 @@ const PADDLE_WIDTH = 15;
 const PADDLE_HEIGHT = 100;
 const BALL_SIZE = 10;
 const BASE_BALL_SPEED = 4;
-const MAX_SCORE = 3;
-const SPEED_INCREASE_INTERVAL = 15000; // 15 seconds
+const MAX_SCORE = 10;
+const SPEED_INCREASE_INTERVAL = 20000; // 20 seconds
 
 // Game state
 let gameState = {
@@ -293,6 +293,14 @@ function draw() {
     ctx.fillStyle = '#FFD700';
     ctx.textAlign = 'center';
     ctx.fillText(`Speed: ${gameState.speedLevel}x`, CANVAS_WIDTH / 2, 30);
+
+    // Draw keyboard instructions (visible on all devices)
+    ctx.font = '14px Arial';
+    ctx.fillStyle = '#CCCCCC';
+    ctx.textAlign = 'right';
+    ctx.fillText('↑ W or ↑ ARROW UP to move up', CANVAS_WIDTH - 20, CANVAS_HEIGHT - 40);
+    ctx.fillText('↓ S or ↓ ARROW DOWN to move down', CANVAS_WIDTH - 20, CANVAS_HEIGHT - 20);
+    ctx.textAlign = 'left';
 
     // Draw game over screen
     if (gameState.gameOver) {
