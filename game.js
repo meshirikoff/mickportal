@@ -28,7 +28,7 @@ function saveHighScore() {
 // Player Object
 const player = {
     x: 100,
-    y: GROUND_Y - 60,
+    y: GROUND_Y - 70,
     width: 60,
     height: 60,
     velocityX: 0,
