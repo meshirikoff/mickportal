@@ -1,7 +1,7 @@
 // Game Constants
 const CANVAS_WIDTH = 1200;
 const CANVAS_HEIGHT = 600;
-const GROUND_HEIGHT = 180;
+const GROUND_HEIGHT = 60;
 const GROUND_Y = CANVAS_HEIGHT - GROUND_HEIGHT;
 
 // Game State
