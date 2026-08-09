@@ -1,7 +1,7 @@
 // Game Constants
 const CANVAS_WIDTH = 1200;
 const CANVAS_HEIGHT = 600;
-const GROUND_HEIGHT = 60;
+const GROUND_HEIGHT = 40;
 const GROUND_Y = CANVAS_HEIGHT - GROUND_HEIGHT;
 
 // Game State
@@ -28,7 +28,7 @@ function saveHighScore() {
 // Player Object
 const player = {
     x: 100,
-         y: GROUND_Y - 60,
+         y: GROUND_Y - 100,
     width: 60,
     height: 60,
     velocityX: 0,
@@ -327,7 +327,7 @@ function initializeLevel() {
     const stats = levelStats[gameState.level] || levelStats[5];
 
     enemy.x = CANVAS_WIDTH - 150;
-    enemy.y = GROUND_Y - 40;
+    enemy.y = GROUND_Y - 80;
     enemy.width = 40;
     enemy.height = 40;
     enemy.hp = stats.hp;
