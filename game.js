@@ -28,7 +28,7 @@ function saveHighScore() {
 // Player Object
 const player = {
     x: 100,
-         y: GROUND_Y - 100,
+         y: GROUND_Y - 220,
     width: 60,
     height: 60,
     velocityX: 0,
@@ -327,7 +327,7 @@ function initializeLevel() {
     const stats = levelStats[gameState.level] || levelStats[5];
 
     enemy.x = CANVAS_WIDTH - 150;
-    enemy.y = GROUND_Y - 80;
+    enemy.y = GROUND_Y - 200;
     enemy.width = 40;
     enemy.height = 40;
     enemy.hp = stats.hp;
