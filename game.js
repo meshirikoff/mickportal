@@ -28,15 +28,15 @@ function saveHighScore() {
 // Player Object
 const player = {
     x: 100,
-         y: GROUND_Y - 220,
+    y: GROUND_Y - 350,
     width: 60,
     height: 60,
     velocityX: 0,
-    velocityY: 0,
+    velocityY: -8,
     speed: 5,
     jumpPower: 12,
     gravity: 0.6,
-    isGrounded: true,
+    isGrounded: false,
     hp: 100,
     maxHp: 100,
     direction: 1,  // 1 for right, -1 for left
