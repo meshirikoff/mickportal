@@ -315,6 +315,11 @@ function initializeLevel() {
     gun.projectiles.length = 0; // Clear gun projectiles
     stick.isActive = false; // Disable stick when level changes
     gun.shootCooldown = gun.shootMaxCooldown; // Reset gun cooldown
+    
+    // Unlock gun on level 2+
+    if (gameState.level >= 2) {
+        player.playerLevel = Math.max(player.playerLevel, 2);
+    }
 }
 
 // Event Listeners
@@ -1069,6 +1074,29 @@ function drawUI() {
     } else {
         ctx.fillStyle = '#00AA00';
         ctx.fillText(`⚔ Block ready (C)`, blockStatusX + 10, blockStatusY);
+    }
+    
+    // === Weapon Status (top right) ===
+    const weaponStatusX = CANVAS_WIDTH - 250;
+    const weaponStatusY = 10;
+    
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.3)';
+    ctx.fillRect(weaponStatusX, weaponStatusY, 240, 60);
+    
+    ctx.fillStyle = '#FFFFFF';
+    ctx.font = 'bold 14px Arial';
+    
+    if (player.playerLevel >= 2) {
+        ctx.fillStyle = '#FF6600';
+        ctx.fillText('🔫 GUN UNLOCKED!', weaponStatusX + 10, weaponStatusY + 25);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.font = '12px Arial';
+        ctx.fillText(`SPACE to shoot | ${gun.shootCooldown > 0 ? 'Reloading...' : 'Ready'}`, weaponStatusX + 10, weaponStatusY + 45);
+    } else {
+        ctx.fillStyle = '#999999';
+        ctx.fillText('🔫 Gun locked - Level 2+', weaponStatusX + 10, weaponStatusY + 25);
+        ctx.font = '12px Arial';
+        ctx.fillText('Get experience to unlock', weaponStatusX + 10, weaponStatusY + 45);
     }
     
     if (gameState.gameOver) {
