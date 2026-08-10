@@ -159,12 +159,12 @@ const SPRITE_SHEET = {
     cols: 4,
     rows: 7,
     animations: {
-        idle: { frames: [0, 1, 2, 3], speed: 0.04 },           // Row 0: idle poses (stay on last frame)
-        walk: { frames: [4, 5, 6, 7], speed: 0.08 },            // Row 1: walking cycle
-        swordAttack: { frames: [8, 9, 10, 11, 12, 13, 14, 15], speed: 0.1, hold: true }, // Rows 2-3: sword swing (hold on last frame)
-        gunShoot: { frames: [16, 17, 18, 19, 20, 21, 22, 23], speed: 0.1, hold: true },  // Rows 4-5: gun shooting (hold on last frame)
-        jump: { frames: [24, 25, 26], speed: 0.12, hold: true },   // Row 6: jumping/landing (hold on landing frame)
-        block: { frames: [27], speed: 0.02 }                   // Row 6: blocking with shield
+        idle: { frames: [0, 1, 2, 3], speed: 0.04 },           // Row 0: idle poses
+        walk: { frames: [4, 5, 6, 7, 8, 9, 10, 11], speed: 0.08 },  // Rows 1-2: walking cycle (8 frames)
+        swordAttack: { frames: [12, 13, 14, 15, 16, 17, 18, 19], speed: 0.1, hold: true }, // Rows 3-4: sword swing
+        gunShoot: { frames: [20, 21, 22, 23], speed: 0.1, hold: true },  // Row 5: gun shooting
+        jump: { frames: [24, 25, 26], speed: 0.12, hold: true },   // Row 6: jumping/landing
+        block: { frames: [27], speed: 0.02 }                   // Row 6: blocking
     }
 };
 
