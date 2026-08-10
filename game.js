@@ -1311,7 +1311,8 @@ const mobileControls = {
     btnLeft: document.getElementById('btnLeft'),
     btnRight: document.getElementById('btnRight'),
     btnJump: document.getElementById('btnJump'),
-    btnAction: document.getElementById('btnAction')
+    btnAction: document.getElementById('btnAction'),
+    btnBlock: document.getElementById('btnBlock')
 };
 
 if (mobileControls.btnLeft) {
@@ -1410,6 +1411,19 @@ if (mobileControls.btnLeft) {
             stick.direction = player.direction;
         }
     });
+    
+    // Block button
+    mobileControls.btnBlock.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        keys.c = true;
+    });
+    mobileControls.btnBlock.addEventListener('touchend', (e) => {
+        e.preventDefault();
+        keys.c = false;
+    });
+    mobileControls.btnBlock.addEventListener('mousedown', () => keys.c = true);
+    mobileControls.btnBlock.addEventListener('mouseup', () => keys.c = false);
+    mobileControls.btnBlock.addEventListener('mouseleave', () => keys.c = false);
 }
 
 // Game Loop
