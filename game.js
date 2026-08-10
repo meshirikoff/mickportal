@@ -28,9 +28,9 @@ function saveHighScore() {
 // Player Object
 const player = {
     x: 100,
-    y: GROUND_Y - 160,
-    width: 160,
-    height: 160,
+    y: GROUND_Y - 100,
+    width: 100,
+    height: 100,
     velocityX: 0,
     velocityY: 0,
     speed: 5,
@@ -394,9 +394,11 @@ document.addEventListener('keydown', (e) => {
         // If gun is unlocked (level 2+), shoot gun instead of stick
         if (player.playerLevel >= 2 && gun.shootCooldown <= 0) {
             const directionToEnemy = enemy.x > player.x ? 1 : -1;
+            // Aim at enemy's center height for accurate hits
+            const bulletY = enemy.y + enemy.height / 2;
             gun.projectiles.push({
                 x: player.x + (directionToEnemy > 0 ? player.width : 0),
-                y: player.y + 15,
+                y: bulletY,
                 width: 6,
                 height: 6,
                 velocityX: 7 * directionToEnemy,
@@ -547,34 +549,9 @@ function update() {
         }
     }
     
-    // Update gun weapon (unlocked at player level 2) - now fires on space key
+    // Update gun weapon (unlocked at player level 2) - manual firing with space key
     if (player.playerLevel >= 2) {
         gun.shootCooldown -= 16;
-        
-        // Auto-fire at enemy when gun is ready and enemy is active
-        if (gun.shootCooldown <= 0 && enemy.isActive) {
-            const directionToEnemy = enemy.x > player.x ? 1 : -1;
-            
-            // Calculate distance to enemy
-            const distToEnemy = Math.abs(enemy.x - player.x);
-            
-            // Auto-fire if enemy is within range (500 pixels)
-            if (distToEnemy < 500) {
-                gun.projectiles.push({
-                    x: player.x + (directionToEnemy > 0 ? player.width : 0),
-                    y: player.y + 15,
-                    width: 6,
-                    height: 6,
-                    velocityX: 7 * directionToEnemy,
-                    velocityY: 0,
-                    damage: gun.damage,
-                    maxDistance: 500,
-                    distanceTraveled: 0,
-                    playerFired: true  // Mark as auto-fire from system
-                });
-                gun.shootCooldown = gun.shootMaxCooldown;
-            }
-        }
     }
     
     // Update gun projectiles
@@ -1385,9 +1362,11 @@ if (mobileControls.btnLeft) {
         // Trigger attack action
         if (player.playerLevel >= 2 && gun.shootCooldown <= 0) {
             const directionToEnemy = enemy.x > player.x ? 1 : -1;
+            // Aim at enemy's center height for accurate hits
+            const bulletY = enemy.y + enemy.height / 2;
             gun.projectiles.push({
                 x: player.x + (directionToEnemy > 0 ? player.width : 0),
-                y: player.y + 15,
+                y: bulletY,
                 width: 6,
                 height: 6,
                 velocityX: 7 * directionToEnemy,
@@ -1409,9 +1388,11 @@ if (mobileControls.btnLeft) {
         // Trigger attack action
         if (player.playerLevel >= 2 && gun.shootCooldown <= 0) {
             const directionToEnemy = enemy.x > player.x ? 1 : -1;
+            // Aim at enemy's center height for accurate hits
+            const bulletY = enemy.y + enemy.height / 2;
             gun.projectiles.push({
                 x: player.x + (directionToEnemy > 0 ? player.width : 0),
-                y: player.y + 15,
+                y: bulletY,
                 width: 6,
                 height: 6,
                 velocityX: 7 * directionToEnemy,
